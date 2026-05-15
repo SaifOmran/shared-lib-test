@@ -20,7 +20,7 @@ def call(Map config = [:]) {
                 steps {
 
                     git branch: 'main',
-                    url: 'https://github.com/abdallanasr/spring-petclinic-A.git'
+                    url: "${config.REPO_URL}"
 
                 }
             }
