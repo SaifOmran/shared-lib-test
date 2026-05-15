@@ -9,8 +9,8 @@ def call(Map config = [:]) {
         }
 
         tools {
-            maven 'Maven-project'
-            jdk 'JDK-project'
+            maven 'mvn'
+            jdk 'jdk'
         }
 
         stages {
@@ -20,7 +20,7 @@ def call(Map config = [:]) {
                 steps {
 
                     git branch: 'main',
-                    url: 'https://github.com/spring-projects/spring-petclinic.git'
+                    url: 'https://github.com/abdallanasr/spring-petclinic-A.git'
 
                 }
             }
