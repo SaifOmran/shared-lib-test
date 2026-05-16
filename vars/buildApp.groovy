@@ -74,6 +74,11 @@ def call(Map config = [:]) {
                     }
                 }
             }
+            stage('Deploy') {
+                steps {
+                    sh "docker run -d --name ${CONTAINER_NAME} -p ${PORT}:8080 ${IMAGE_NAME}:${IMAGE_TAG}"
+                }
+            }
         }
     }
 }
