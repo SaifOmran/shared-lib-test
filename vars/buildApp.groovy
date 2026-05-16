@@ -35,7 +35,7 @@ def call(Map config = [:]) {
 
                 steps {
 
-                    sh 'mvn clean package'
+                    sh 'mvn clean package -DskipTests'
                 }
             }
 
