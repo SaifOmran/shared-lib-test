@@ -51,12 +51,10 @@ def call(Map config = [:]) {
                 steps {
 
                     sh '''
-                        nohup java -jar target/*.jar \
-                        > app.log 2>&1 &
-                        
-                        sleep 300
+                    pkill -f 'java -jar' || true
+                    BUILD_ID=dontKillMe nohup java -jar target/*.jar \
+                    > app.log 2>&1 &
                     '''
-
                 }
             }
         }
