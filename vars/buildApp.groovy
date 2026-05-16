@@ -77,6 +77,8 @@ def call(Map config = [:]) {
             }
             stage('Deploy') {
                 steps {
+                    sh "docker stop ${CONTAINER_NAME}"
+                    sh "docker rm ${CONTAINER_NAME}"
                     sh "docker run -d --name ${CONTAINER_NAME} -p ${SERVER_PORT}:8080 ${IMAGE_NAME}:${IMAGE_TAG}"
                 }
             }
