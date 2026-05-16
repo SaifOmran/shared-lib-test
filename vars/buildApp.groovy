@@ -5,10 +5,16 @@ def call(Map config = [:]) {
         agent any
 
         environment {
+
             SERVER_PORT = "${config.PORT}"
+
+            IMAGE_NAME = "${config.IMAGE_NAME}"
+            IMAGE_TAG  = "${config.IMAGE_TAG}"
+            REPO_NAME  = "${config.REPO_NAME}"
         }
 
         tools {
+
             maven 'mvn'
             jdk 'jdk'
         }
@@ -21,40 +27,51 @@ def call(Map config = [:]) {
 
                     git branch: 'main',
                     url: "${config.REPO_URL}"
-
-                }
-            }
-
-            stage('Compile') {
-
-                steps {
-                    sh 'mvn clean compile'
                 }
             }
 
             stage('Build') {
 
                 steps {
-                    sh 'mvn test'
+
+                    sh 'mvn clean package'
                 }
             }
 
-            stage('Package') {
+            stage('Build Image') {
 
                 steps {
-                    sh 'mvn package'
+
+                    sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+
+                    sh """
+                        docker tag \
+                        ${IMAGE_NAME}:${IMAGE_TAG} \
+                        ${REPO_NAME}:${IMAGE_TAG}
+                    """
                 }
             }
 
-            stage('Run') {
+            stage('Push Image') {
 
                 steps {
 
-                    sh '''
-                    pkill -f 'java -jar' || true
-                    BUILD_ID=dontKillMe nohup java -jar target/*.jar \
-                    > app.log 2>&1 &
-                    '''
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'docker-cred',
+                            usernameVariable: 'USER',
+                            passwordVariable: 'PASS'
+                        )
+                    ]) {
+
+                        sh """
+                            echo \$PASS | docker login \
+                            -u \$USER \
+                            --password-stdin
+                        """
+
+                        sh "docker push ${REPO_NAME}:${IMAGE_TAG}"
+                    }
                 }
             }
         }
